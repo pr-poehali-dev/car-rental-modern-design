@@ -4,223 +4,272 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 const Index = () => {
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
-  const [selectedCar, setSelectedCar] = useState<any>(null);
-  const [activeSection, setActiveSection] = useState('hero');
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedTime, setSelectedTime] = useState<string>();
+  const [selectedQuest, setSelectedQuest] = useState<any>(null);
 
-  const cars = [
+  const quests = [
     {
       id: 1,
-      name: 'BMW 5 Series',
-      category: 'Бизнес',
-      price: 5000,
-      image: 'https://cdn.poehali.dev/projects/b8c12fb2-83f6-4b5b-976d-c3119c55c166/files/32623979-6caa-4216-9943-f469d888a161.jpg',
-      specs: { seats: 5, transmission: 'Автомат', fuel: 'Бензин' },
-      features: ['Круиз-контроль', 'Камера заднего вида', 'Подогрев сидений', 'Bluetooth']
+      name: 'Тайна Средневекового Замка',
+      difficulty: 'Средний',
+      duration: '60 минут',
+      players: '2-4',
+      price: 3500,
+      image: 'https://cdn.poehali.dev/projects/b8c12fb2-83f6-4b5b-976d-c3119c55c166/files/04c2e9f5-c956-4391-af3c-3a86a172f853.jpg',
+      description: 'Погрузитесь в атмосферу средневековья. Разгадайте древние загадки и найдите сокровище.',
+      tags: ['Приключения', 'Загадки', 'История']
     },
     {
       id: 2,
-      name: 'Mercedes Cabriolet',
-      category: 'Премиум',
-      price: 8000,
-      image: 'https://cdn.poehali.dev/projects/b8c12fb2-83f6-4b5b-976d-c3119c55c166/files/b0c19f43-b451-4c5a-8241-f4d55f472f67.jpg',
-      specs: { seats: 4, transmission: 'Автомат', fuel: 'Бензин' },
-      features: ['Панорамная крыша', 'Премиум аудио', 'Кожаный салон', 'Навигация']
+      name: 'Побег из Киберпространства',
+      difficulty: 'Сложный',
+      duration: '90 минут',
+      players: '3-6',
+      price: 4500,
+      image: 'https://cdn.poehali.dev/projects/b8c12fb2-83f6-4b5b-976d-c3119c55c166/files/4ab4144f-29f3-411b-871a-c951503d0c22.jpg',
+      description: 'Футуристический квест в мире высоких технологий. Взломайте систему и верните контроль.',
+      tags: ['Sci-Fi', 'Технологии', 'Хакинг']
     },
     {
       id: 3,
-      name: 'Range Rover',
-      category: 'Внедорожник',
-      price: 10000,
-      image: 'https://cdn.poehali.dev/projects/b8c12fb2-83f6-4b5b-976d-c3119c55c166/files/f1891fcd-d224-471d-9290-e4f03e697a37.jpg',
-      specs: { seats: 7, transmission: 'Автомат', fuel: 'Дизель' },
-      features: ['Полный привод', 'Климат-контроль', 'Парктроник', 'Адаптивные фары']
+      name: 'Проклятие Психиатрической Больницы',
+      difficulty: 'Экстремальный',
+      duration: '75 минут',
+      players: '2-5',
+      price: 4000,
+      image: 'https://cdn.poehali.dev/projects/b8c12fb2-83f6-4b5b-976d-c3119c55c166/files/bc5c6329-081a-4dda-9a8e-17eb2f8dea56.jpg',
+      description: 'Самый страшный квест города. Только для смелых. Не рекомендуется впечатлительным.',
+      tags: ['Хоррор', '18+', 'Экстрим']
     }
   ];
+
+  const timeSlots = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
-    setActiveSection(sectionId);
-  };
-
-  const calculateDays = () => {
-    if (startDate && endDate) {
-      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays;
-    }
-    return 1;
   };
 
   return (
-    <div className="min-h-screen">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Icon name="Car" size={32} className="text-primary" />
-              <span className="text-2xl font-bold text-secondary">AutoRent</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+                <Icon name="KeyRound" size={24} className="text-black" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary via-white to-primary bg-clip-text text-transparent">
+                QuestCity
+              </span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <button onClick={() => scrollToSection('hero')} className="text-sm font-medium hover:text-primary transition-colors">Главная</button>
-              <button onClick={() => scrollToSection('tariffs')} className="text-sm font-medium hover:text-primary transition-colors">Тарифы</button>
-              <button onClick={() => scrollToSection('conditions')} className="text-sm font-medium hover:text-primary transition-colors">Условия</button>
-              <button onClick={() => scrollToSection('reviews')} className="text-sm font-medium hover:text-primary transition-colors">Отзывы</button>
-              <button onClick={() => scrollToSection('faq')} className="text-sm font-medium hover:text-primary transition-colors">FAQ</button>
-              <button onClick={() => scrollToSection('about')} className="text-sm font-medium hover:text-primary transition-colors">О нас</button>
-              <button onClick={() => scrollToSection('contacts')} className="text-sm font-medium hover:text-primary transition-colors">Контакты</button>
+              <button onClick={() => scrollToSection('quests')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Квесты</button>
+              <button onClick={() => scrollToSection('about')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">О нас</button>
+              <button onClick={() => scrollToSection('prices')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Цены</button>
+              <button onClick={() => scrollToSection('howto')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Как играть</button>
+              <button onClick={() => scrollToSection('reviews')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Отзывы</button>
+              <button onClick={() => scrollToSection('contacts')} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Контакты</button>
             </div>
-            <Button size="sm">+7 (999) 123-45-67</Button>
+            <Button className="bg-primary text-black hover:bg-primary/90">
+              <Icon name="Phone" size={16} className="mr-2" />
+              +7 (999) 777-77-77
+            </Button>
           </nav>
         </div>
       </header>
 
-      <section id="hero" className="pt-32 pb-20 px-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
-        <div className="container mx-auto">
-          <div className="max-w-4xl mx-auto text-center mb-12 animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Аренда автомобилей премиум-класса
+      <section className="relative pt-40 pb-32 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-secondary to-black opacity-95"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"></div>
+        
+        <div className="container mx-auto relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16 animate-fade-in">
+            <Badge className="mb-6 bg-primary/20 text-primary border-primary/30">Лучшие квесты города</Badge>
+            <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight">
+              <span className="bg-gradient-to-r from-white via-primary to-white bg-clip-text text-transparent">
+                Испытай себя
+              </span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Широкий выбор автомобилей для бизнеса и отдыха. Простое бронирование онлайн.
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+              Погрузись в мир интриг и головоломок. Найди выход за 60 минут или останься навсегда.
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-primary text-black hover:bg-primary/90 text-lg px-8" onClick={() => scrollToSection('quests')}>
+                <Icon name="Flame" className="mr-2" />
+                Выбрать квест
+              </Button>
+              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10 text-lg px-8">
+                <Icon name="Gift" className="mr-2" />
+                Подарочный сертификат
+              </Button>
+            </div>
           </div>
 
-          <Card className="max-w-5xl mx-auto shadow-2xl animate-scale-in">
-            <CardContent className="p-8">
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Дата начала аренды</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Icon name="CalendarDays" className="mr-2" size={18} />
-                        {startDate ? format(startDate, 'dd MMMM yyyy', { locale: ru }) : 'Выберите дату'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar mode="single" selected={startDate} onSelect={setStartDate} locale={ru} />
-                    </PopoverContent>
-                  </Popover>
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <Card className="bg-secondary/50 border-border backdrop-blur-sm hover:bg-secondary/70 transition-all">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="Users" size={32} className="text-primary" />
                 </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Дата окончания аренды</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <Icon name="CalendarDays" className="mr-2" size={18} />
-                        {endDate ? format(endDate, 'dd MMMM yyyy', { locale: ru }) : 'Выберите дату'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar mode="single" selected={endDate} onSelect={setEndDate} locale={ru} />
-                    </PopoverContent>
-                  </Popover>
+                <h3 className="text-lg font-bold mb-2">1000+ игроков</h3>
+                <p className="text-sm text-muted-foreground">Прошли наши квесты</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-secondary/50 border-border backdrop-blur-sm hover:bg-secondary/70 transition-all">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="Star" size={32} className="text-primary" />
                 </div>
-
-                <div className="flex items-end">
-                  <Button className="w-full" size="lg" onClick={() => scrollToSection('catalog')}>
-                    <Icon name="Search" className="mr-2" size={18} />
-                    Найти автомобиль
-                  </Button>
+                <h3 className="text-lg font-bold mb-2">4.9/5.0 рейтинг</h3>
+                <p className="text-sm text-muted-foreground">На основе отзывов</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-secondary/50 border-border backdrop-blur-sm hover:bg-secondary/70 transition-all">
+              <CardContent className="p-6 text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Icon name="Award" size={32} className="text-primary" />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <h3 className="text-lg font-bold mb-2">Лучшие в городе</h3>
+                <p className="text-sm text-muted-foreground">По версии премии 2024</p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
-      <section id="catalog" className="py-20 px-4">
+      <section id="quests" className="py-24 px-4 bg-gradient-to-b from-black to-secondary">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Наш автопарк</h2>
-            <p className="text-lg text-muted-foreground">Выберите автомобиль для вашей поездки</p>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              Наши квесты
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Выбери своё приключение и испытай незабываемые эмоции
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cars.map((car) => (
-              <Card key={car.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-                <div className="relative overflow-hidden bg-gradient-to-br from-muted to-background">
-                  <img src={car.image} alt={car.name} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
-                  <Badge className="absolute top-4 right-4">{car.category}</Badge>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {quests.map((quest) => (
+              <Card key={quest.id} className="bg-card border-border overflow-hidden group hover:border-primary/50 transition-all duration-300">
+                <div className="relative h-64 overflow-hidden">
+                  <img 
+                    src={quest.image} 
+                    alt={quest.name} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    {quest.tags.map((tag, idx) => (
+                      <Badge key={idx} className="bg-black/60 text-primary border-primary/30 backdrop-blur-sm">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <h3 className="text-2xl font-bold mb-2 text-white">{quest.name}</h3>
+                  </div>
                 </div>
                 <CardContent className="p-6">
-                  <h3 className="text-2xl font-bold mb-2">{car.name}</h3>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <span className="flex items-center gap-1">
-                      <Icon name="Users" size={16} /> {car.specs.seats}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Icon name="Gauge" size={16} /> {car.specs.transmission}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Icon name="Fuel" size={16} /> {car.specs.fuel}
-                    </span>
+                  <p className="text-muted-foreground mb-6">{quest.description}</p>
+                  
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="text-center">
+                      <Icon name="Clock" size={20} className="text-primary mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">{quest.duration}</p>
+                    </div>
+                    <div className="text-center">
+                      <Icon name="Users" size={20} className="text-primary mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">{quest.players}</p>
+                    </div>
+                    <div className="text-center">
+                      <Icon name="Zap" size={20} className="text-primary mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">{quest.difficulty}</p>
+                    </div>
                   </div>
-                  <div className="flex items-end justify-between">
+
+                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-3xl font-bold text-primary">{car.price} ₽</p>
-                      <p className="text-sm text-muted-foreground">за сутки</p>
+                      <p className="text-3xl font-bold text-primary">{quest.price} ₽</p>
+                      <p className="text-xs text-muted-foreground">за команду</p>
                     </div>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button onClick={() => setSelectedCar(car)}>
+                        <Button 
+                          className="bg-primary text-black hover:bg-primary/90"
+                          onClick={() => setSelectedQuest(quest)}
+                        >
                           Забронировать
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
+                      <DialogContent className="max-w-2xl bg-card border-border">
                         <DialogHeader>
-                          <DialogTitle className="text-2xl">Бронирование {car.name}</DialogTitle>
+                          <DialogTitle className="text-3xl font-bold">{quest.name}</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-6">
-                          <img src={car.image} alt={car.name} className="w-full h-48 object-cover rounded-lg" />
+                          <img src={quest.image} alt={quest.name} className="w-full h-48 object-cover rounded-lg" />
                           
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <p className="text-sm text-muted-foreground mb-1">Дата начала</p>
-                              <p className="font-semibold">{startDate ? format(startDate, 'dd MMMM yyyy', { locale: ru }) : 'Не выбрана'}</p>
+                              <label className="text-sm font-medium mb-2 block">Выберите дату</label>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button variant="outline" className="w-full justify-start text-left">
+                                    <Icon name="CalendarDays" className="mr-2" size={18} />
+                                    {selectedDate ? format(selectedDate, 'dd MMMM yyyy', { locale: ru }) : 'Выберите дату'}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 bg-card border-border">
+                                  <Calendar mode="single" selected={selectedDate} onSelect={setSelectedDate} locale={ru} />
+                                </PopoverContent>
+                              </Popover>
                             </div>
                             <div>
-                              <p className="text-sm text-muted-foreground mb-1">Дата окончания</p>
-                              <p className="font-semibold">{endDate ? format(endDate, 'dd MMMM yyyy', { locale: ru }) : 'Не выбрана'}</p>
+                              <label className="text-sm font-medium mb-2 block">Выберите время</label>
+                              <Select onValueChange={setSelectedTime}>
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Время" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-card border-border">
+                                  {timeSlots.map((time) => (
+                                    <SelectItem key={time} value={time}>{time}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                           </div>
 
-                          <div className="bg-muted p-4 rounded-lg">
+                          <div className="bg-secondary/50 p-4 rounded-lg border border-border">
                             <div className="flex justify-between mb-2">
-                              <span>Стоимость за {calculateDays()} дн.</span>
-                              <span className="font-semibold">{car.price * calculateDays()} ₽</span>
+                              <span className="text-muted-foreground">Квест:</span>
+                              <span className="font-semibold">{quest.name}</span>
                             </div>
-                            <div className="flex justify-between text-lg font-bold text-primary pt-2 border-t">
-                              <span>Итого</span>
-                              <span>{car.price * calculateDays()} ₽</span>
+                            <div className="flex justify-between mb-2">
+                              <span className="text-muted-foreground">Дата:</span>
+                              <span className="font-semibold">
+                                {selectedDate ? format(selectedDate, 'dd MMMM', { locale: ru }) : 'Не выбрана'}
+                              </span>
                             </div>
-                          </div>
-
-                          <div>
-                            <p className="font-semibold mb-2">Особенности автомобиля:</p>
-                            <div className="grid grid-cols-2 gap-2">
-                              {car.features.map((feature, idx) => (
-                                <div key={idx} className="flex items-center gap-2 text-sm">
-                                  <Icon name="Check" size={16} className="text-primary" />
-                                  {feature}
-                                </div>
-                              ))}
+                            <div className="flex justify-between mb-4">
+                              <span className="text-muted-foreground">Время:</span>
+                              <span className="font-semibold">{selectedTime || 'Не выбрано'}</span>
+                            </div>
+                            <div className="flex justify-between text-xl font-bold text-primary pt-4 border-t border-border">
+                              <span>Итого:</span>
+                              <span>{quest.price} ₽</span>
                             </div>
                           </div>
 
-                          <Button className="w-full" size="lg">
+                          <Button className="w-full bg-primary text-black hover:bg-primary/90" size="lg">
+                            <Icon name="Check" className="mr-2" />
                             Подтвердить бронирование
                           </Button>
                         </div>
@@ -234,159 +283,244 @@ const Index = () => {
         </div>
       </section>
 
-      <section id="tariffs" className="py-20 px-4 bg-muted/30">
+      <section id="about" className="py-24 px-4 bg-secondary">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Тарифы и цены</h2>
-            <p className="text-lg text-muted-foreground">Прозрачная ценовая политика без скрытых платежей</p>
-          </div>
-
-          <Tabs defaultValue="daily" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
-              <TabsTrigger value="daily">Суточная</TabsTrigger>
-              <TabsTrigger value="weekly">Недельная</TabsTrigger>
-              <TabsTrigger value="monthly">Месячная</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="daily" className="space-y-4">
-              <div className="grid md:grid-cols-3 gap-6">
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2">Эконом</h3>
-                    <p className="text-3xl font-bold text-primary mb-4">от 2500 ₽<span className="text-sm text-muted-foreground">/сутки</span></p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />Компактные авто</li>
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />200 км в сутки</li>
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />Базовая страховка</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow border-primary">
-                  <CardContent className="p-6">
-                    <Badge className="mb-2">Популярный</Badge>
-                    <h3 className="text-xl font-bold mb-2">Бизнес</h3>
-                    <p className="text-3xl font-bold text-primary mb-4">от 5000 ₽<span className="text-sm text-muted-foreground">/сутки</span></p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />Бизнес-класс</li>
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />Безлимитный пробег</li>
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />Полная страховка</li>
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2">Премиум</h3>
-                    <p className="text-3xl font-bold text-primary mb-4">от 10000 ₽<span className="text-sm text-muted-foreground">/сутки</span></p>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />Премиум авто</li>
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />Безлимитный пробег</li>
-                      <li className="flex gap-2"><Icon name="Check" size={16} className="text-primary mt-0.5" />VIP обслуживание</li>
-                    </ul>
-                  </CardContent>
-                </Card>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <Badge className="mb-6 bg-primary/20 text-primary border-primary/30">О нас</Badge>
+              <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+                Погрузись в мир приключений
+              </h2>
+              <p className="text-lg text-muted-foreground mb-6">
+                QuestCity — это не просто квесты. Это целый мир загадок, головоломок и невероятных эмоций. 
+                Мы создаём атмосферу, в которую хочется возвращаться снова и снова.
+              </p>
+              <p className="text-lg text-muted-foreground mb-8">
+                Каждый наш квест — это уникальная история с профессиональными декорациями, 
+                актёрами и спецэффектами. Мы работаем для того, чтобы ваши впечатления были незабываемыми.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-black/40 p-4 rounded-lg border border-primary/20">
+                  <p className="text-4xl font-bold text-primary mb-2">5+</p>
+                  <p className="text-sm text-muted-foreground">лет опыта</p>
+                </div>
+                <div className="bg-black/40 p-4 rounded-lg border border-primary/20">
+                  <p className="text-4xl font-bold text-primary mb-2">15+</p>
+                  <p className="text-sm text-muted-foreground">квестов</p>
+                </div>
               </div>
-            </TabsContent>
-
-            <TabsContent value="weekly" className="text-center py-12">
-              <p className="text-lg text-muted-foreground mb-4">При аренде от 7 дней</p>
-              <p className="text-4xl font-bold text-primary">Скидка 15%</p>
-            </TabsContent>
-
-            <TabsContent value="monthly" className="text-center py-12">
-              <p className="text-lg text-muted-foreground mb-4">При аренде от 30 дней</p>
-              <p className="text-4xl font-bold text-primary">Скидка 30%</p>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
-
-      <section id="conditions" className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Условия аренды</h2>
-            <p className="text-lg text-muted-foreground">Простые и понятные правила</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card>
-              <CardContent className="p-6">
-                <Icon name="FileText" size={32} className="text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">Документы</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>• Паспорт РФ</li>
-                  <li>• Водительское удостоверение</li>
-                  <li>• Стаж вождения от 2 лет</li>
-                  <li>• Возраст от 23 лет</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <Icon name="Shield" size={32} className="text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">Страхование</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>• ОСАГО включено</li>
-                  <li>• КАСКО по желанию</li>
-                  <li>• Страхование водителя</li>
-                  <li>• Защита от угона</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <Icon name="CreditCard" size={32} className="text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">Оплата</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>• Наличные</li>
-                  <li>• Банковские карты</li>
-                  <li>• Безналичный расчёт</li>
-                  <li>• Залог от 5000 ₽</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <Icon name="MapPin" size={32} className="text-primary mb-4" />
-                <h3 className="text-xl font-bold mb-2">Доставка</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li>• По городу бесплатно</li>
-                  <li>• В аэропорт +500 ₽</li>
-                  <li>• За город по договорённости</li>
-                  <li>• Круглосуточно</li>
-                </ul>
-              </CardContent>
-            </Card>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-3xl blur-3xl"></div>
+              <Card className="relative bg-card/50 border-primary/30 backdrop-blur-sm">
+                <CardContent className="p-8 space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon name="Sparkles" size={24} className="text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">Уникальные сценарии</h3>
+                      <p className="text-muted-foreground">Каждый квест разработан нашей командой сценаристов</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon name="Shield" size={24} className="text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">Безопасность</h3>
+                      <p className="text-muted-foreground">Видеонаблюдение и кнопка экстренного выхода</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon name="HeadphonesIcon" size={24} className="text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">Поддержка 24/7</h3>
+                      <p className="text-muted-foreground">Операторы помогут в любой ситуации</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="reviews" className="py-20 px-4 bg-muted/30">
+      <section id="prices" className="py-24 px-4 bg-gradient-to-b from-secondary to-black">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Отзывы клиентов</h2>
-            <p className="text-lg text-muted-foreground">Более 1000 довольных клиентов</p>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              Цены и тарифы
+            </h2>
+            <p className="text-xl text-muted-foreground">Прозрачное ценообразование без скрытых платежей</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="bg-card border-border hover:border-primary/50 transition-all">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4">Стандарт</h3>
+                <p className="text-5xl font-black text-primary mb-2">3500₽</p>
+                <p className="text-muted-foreground mb-6">за команду</p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">До 4 человек</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">60 минут игры</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">3 подсказки</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Фото на память</span>
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary/10">
+                  Выбрать
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-b from-primary/10 to-card border-primary relative overflow-hidden">
+              <Badge className="absolute top-4 right-4 bg-primary text-black">Популярный</Badge>
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4">Премиум</h3>
+                <p className="text-5xl font-black text-primary mb-2">4500₽</p>
+                <p className="text-muted-foreground mb-6">за команду</p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">До 6 человек</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">90 минут игры</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Безлимит подсказок</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Профессиональная фотосессия</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Напитки включены</span>
+                  </li>
+                </ul>
+                <Button className="w-full bg-primary text-black hover:bg-primary/90">
+                  Выбрать
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card border-border hover:border-primary/50 transition-all">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4">Корпоратив</h3>
+                <p className="text-5xl font-black text-primary mb-2">от 10000₽</p>
+                <p className="text-muted-foreground mb-6">за команду</p>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">До 20 человек</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Несколько квестов</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Кейтеринг</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Icon name="Check" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">Персональный ведущий</span>
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary/10">
+                  Обсудить
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section id="howto" className="py-24 px-4 bg-black">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              Как это работает
+            </h2>
+            <p className="text-xl text-muted-foreground">Простые шаги до незабываемого приключения</p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-8">
             {[
-              { name: 'Александр М.', text: 'Отличный сервис! Автомобиль в идеальном состоянии, быстрое оформление. Буду обращаться ещё.', rating: 5 },
-              { name: 'Мария К.', text: 'Арендовала Mercedes для важной встречи. Всё прошло идеально, машина премиум-класса, чистая и ухоженная.', rating: 5 },
-              { name: 'Дмитрий П.', text: 'Удобное бронирование онлайн, доставили прямо к дому. Цены адекватные, рекомендую!', rating: 5 }
+              { icon: 'Calendar', title: 'Забронируйте', text: 'Выберите квест и удобное время' },
+              { icon: 'CreditCard', title: 'Оплатите', text: 'Онлайн или на месте' },
+              { icon: 'MapPin', title: 'Приходите', text: 'За 10 минут до начала' },
+              { icon: 'Trophy', title: 'Побеждайте', text: 'Решайте загадки и выходите' }
+            ].map((step, idx) => (
+              <div key={idx} className="relative">
+                <div className="bg-gradient-to-b from-secondary to-black border border-border rounded-xl p-6 text-center hover:border-primary/50 transition-all">
+                  <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                    <Icon name={step.icon as any} size={32} className="text-primary" />
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-black font-bold text-sm">
+                      {idx + 1}
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground">{step.text}</p>
+                </div>
+                {idx < 3 && (
+                  <div className="hidden md:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary to-transparent"></div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="reviews" className="py-24 px-4 bg-gradient-to-b from-black to-secondary">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              Отзывы игроков
+            </h2>
+            <p className="text-xl text-muted-foreground">Что говорят те, кто уже прошёл наши квесты</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { name: 'Анна С.', quest: 'Средневековый Замок', text: 'Невероятная атмосфера! Декорации на высшем уровне. Мы полностью погрузились в историю. Обязательно вернёмся!', rating: 5 },
+              { name: 'Михаил К.', quest: 'Киберпространство', text: 'Самый технологичный квест, который я проходил. Спецэффекты просто космос. Рекомендую всем любителям sci-fi!', rating: 5 },
+              { name: 'Елена Д.', quest: 'Психбольница', text: 'Страшно, очень страшно! Но это именно то, что мы хотели. Актёры великолепны. Адреналин зашкаливает!', rating: 5 }
             ].map((review, idx) => (
-              <Card key={idx}>
+              <Card key={idx} className="bg-card border-border">
                 <CardContent className="p-6">
-                  <div className="flex gap-1 mb-3">
+                  <div className="flex gap-1 mb-4">
                     {[...Array(review.rating)].map((_, i) => (
-                      <Icon key={i} name="Star" size={16} className="fill-accent text-accent" />
+                      <Icon key={i} name="Star" size={16} className="fill-primary text-primary" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4">"{review.text}"</p>
-                  <p className="font-semibold">{review.name}</p>
+                  <p className="text-muted-foreground mb-6">"{review.text}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                      <Icon name="User" size={20} className="text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-bold">{review.name}</p>
+                      <p className="text-xs text-muted-foreground">{review.quest}</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -394,163 +528,80 @@ const Index = () => {
         </div>
       </section>
 
-      <section id="faq" className="py-20 px-4">
-        <div className="container mx-auto max-w-3xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Вопросы и ответы</h2>
-            <p className="text-lg text-muted-foreground">Ответы на частые вопросы</p>
-          </div>
-
-          <Accordion type="single" collapsible className="space-y-4">
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-left">Какие документы нужны для аренды?</AccordionTrigger>
-              <AccordionContent>
-                Для аренды автомобиля необходимы: паспорт РФ, водительское удостоверение с стажем от 2 лет, возраст от 23 лет. Также может потребоваться залоговая карта.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="text-left">Можно ли продлить срок аренды?</AccordionTrigger>
-              <AccordionContent>
-                Да, вы можете продлить аренду, связавшись с нами заранее. Если автомобиль не забронирован другим клиентом, мы с радостью продлим ваш договор.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-3">
-              <AccordionTrigger className="text-left">Что входит в стоимость аренды?</AccordionTrigger>
-              <AccordionContent>
-                В базовую стоимость входит: аренда автомобиля, ОСАГО, базовая мойка, техническая поддержка 24/7. КАСКО и дополнительные услуги оплачиваются отдельно.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4">
-              <AccordionTrigger className="text-left">Можно ли арендовать с водителем?</AccordionTrigger>
-              <AccordionContent>
-                Да, мы предоставляем услугу аренды автомобиля с водителем. Стоимость рассчитывается индивидуально в зависимости от маршрута и времени работы.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-5">
-              <AccordionTrigger className="text-left">Что делать в случае ДТП?</AccordionTrigger>
-              <AccordionContent>
-                При ДТП немедленно свяжитесь с нами и вызовите ГИБДД. Все автомобили застрахованы по ОСАГО. При наличии КАСКО ущерб покрывается страховкой.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </section>
-
-      <section id="about" className="py-20 px-4 bg-muted/30">
+      <section id="contacts" className="py-24 px-4 bg-secondary">
         <div className="container mx-auto max-w-5xl">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">О компании</h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                AutoRent — надёжный партнёр в аренде автомобилей с 2015 года. Мы предлагаем широкий выбор автомобилей премиум и бизнес-класса для любых целей.
-              </p>
-              <p className="text-lg text-muted-foreground mb-6">
-                Наша миссия — сделать аренду автомобилей максимально простой, удобной и доступной. Каждый автомобиль проходит тщательную проверку и обслуживание.
-              </p>
-              <div className="grid grid-cols-3 gap-6 mt-8">
-                <div className="text-center">
-                  <p className="text-4xl font-bold text-primary mb-2">10+</p>
-                  <p className="text-sm text-muted-foreground">лет на рынке</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-4xl font-bold text-primary mb-2">50+</p>
-                  <p className="text-sm text-muted-foreground">автомобилей</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-4xl font-bold text-primary mb-2">1000+</p>
-                  <p className="text-sm text-muted-foreground">клиентов</p>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <Card>
-                <CardContent className="p-6 flex items-start gap-4">
-                  <Icon name="Award" size={32} className="text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-bold mb-2">Проверенное качество</h3>
-                    <p className="text-sm text-muted-foreground">Все автомобили проходят регулярное ТО и детейлинг</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 flex items-start gap-4">
-                  <Icon name="Clock" size={32} className="text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-bold mb-2">24/7 поддержка</h3>
-                    <p className="text-sm text-muted-foreground">Всегда на связи для решения любых вопросов</p>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 flex items-start gap-4">
-                  <Icon name="Percent" size={32} className="text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-bold mb-2">Выгодные цены</h3>
-                    <p className="text-sm text-muted-foreground">Гибкая система скидок и прозрачное ценообразование</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="contacts" className="py-20 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Контакты</h2>
-            <p className="text-lg text-muted-foreground">Свяжитесь с нами любым удобным способом</p>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              Контакты
+            </h2>
+            <p className="text-xl text-muted-foreground">Свяжитесь с нами удобным способом</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            <Card>
+            <Card className="bg-card border-border">
               <CardContent className="p-8 space-y-6">
                 <div className="flex items-start gap-4">
-                  <Icon name="Phone" size={24} className="text-primary flex-shrink-0 mt-1" />
+                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="Phone" size={24} className="text-primary" />
+                  </div>
                   <div>
                     <p className="font-semibold mb-1">Телефон</p>
-                    <p className="text-muted-foreground">+7 (999) 123-45-67</p>
-                    <p className="text-sm text-muted-foreground">Круглосуточно</p>
+                    <p className="text-muted-foreground">+7 (999) 777-77-77</p>
+                    <p className="text-sm text-muted-foreground mt-1">Ежедневно 9:00 - 23:00</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <Icon name="Mail" size={24} className="text-primary flex-shrink-0 mt-1" />
+                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="Mail" size={24} className="text-primary" />
+                  </div>
                   <div>
                     <p className="font-semibold mb-1">Email</p>
-                    <p className="text-muted-foreground">info@autorent.ru</p>
+                    <p className="text-muted-foreground">info@questcity.ru</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <Icon name="MapPin" size={24} className="text-primary flex-shrink-0 mt-1" />
+                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="MapPin" size={24} className="text-primary" />
+                  </div>
                   <div>
                     <p className="font-semibold mb-1">Адрес</p>
-                    <p className="text-muted-foreground">Москва, ул. Примерная, д. 10</p>
-                    <p className="text-sm text-muted-foreground">Пн-Вс: 09:00-21:00</p>
+                    <p className="text-muted-foreground">г. Москва, ул. Приключений, 13</p>
+                    <p className="text-sm text-muted-foreground mt-1">Метро Площадь Революции</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-card border-border">
               <CardContent className="p-8">
                 <form className="space-y-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">Ваше имя</label>
-                    <input type="text" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Иван Иванов" />
+                    <input 
+                      type="text" 
+                      className="w-full px-4 py-3 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground" 
+                      placeholder="Иван Иванов" 
+                    />
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-2 block">Телефон</label>
-                    <input type="tel" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="+7 (999) 123-45-67" />
+                    <input 
+                      type="tel" 
+                      className="w-full px-4 py-3 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground" 
+                      placeholder="+7 (999) 777-77-77" 
+                    />
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-2 block">Сообщение</label>
-                    <textarea rows={4} className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ваш вопрос или комментарий" />
+                    <textarea 
+                      rows={4} 
+                      className="w-full px-4 py-3 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground" 
+                      placeholder="Ваш вопрос или комментарий" 
+                    />
                   </div>
-                  <Button className="w-full" size="lg">Отправить</Button>
+                  <Button className="w-full bg-primary text-black hover:bg-primary/90" size="lg">
+                    Отправить
+                  </Button>
                 </form>
               </CardContent>
             </Card>
@@ -558,43 +609,45 @@ const Index = () => {
         </div>
       </section>
 
-      <footer className="bg-secondary text-white py-12 px-4">
+      <footer className="bg-black border-t border-border py-12 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Icon name="Car" size={28} />
-                <span className="text-xl font-bold">AutoRent</span>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+                  <Icon name="KeyRound" size={20} className="text-black" />
+                </div>
+                <span className="text-xl font-bold text-primary">QuestCity</span>
               </div>
-              <p className="text-sm text-white/70">Аренда автомобилей премиум-класса с 2015 года</p>
+              <p className="text-sm text-muted-foreground">Лучшие квесты вашего города с 2019 года</p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Компания</h4>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><button onClick={() => scrollToSection('about')} className="hover:text-white transition-colors">О нас</button></li>
-                <li><button onClick={() => scrollToSection('conditions')} className="hover:text-white transition-colors">Условия</button></li>
-                <li><button onClick={() => scrollToSection('tariffs')} className="hover:text-white transition-colors">Тарифы</button></li>
+              <h4 className="font-semibold mb-4 text-primary">Квесты</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><button className="hover:text-primary transition-colors">Средневековье</button></li>
+                <li><button className="hover:text-primary transition-colors">Sci-Fi</button></li>
+                <li><button className="hover:text-primary transition-colors">Хоррор</button></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Поддержка</h4>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><button onClick={() => scrollToSection('faq')} className="hover:text-white transition-colors">FAQ</button></li>
-                <li><button onClick={() => scrollToSection('contacts')} className="hover:text-white transition-colors">Контакты</button></li>
-                <li><button onClick={() => scrollToSection('reviews')} className="hover:text-white transition-colors">Отзывы</button></li>
+              <h4 className="font-semibold mb-4 text-primary">Компания</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><button onClick={() => scrollToSection('about')} className="hover:text-primary transition-colors">О нас</button></li>
+                <li><button onClick={() => scrollToSection('prices')} className="hover:text-primary transition-colors">Цены</button></li>
+                <li><button onClick={() => scrollToSection('reviews')} className="hover:text-primary transition-colors">Отзывы</button></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Контакты</h4>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>+7 (999) 123-45-67</li>
-                <li>info@autorent.ru</li>
-                <li>Москва, ул. Примерная, 10</li>
+              <h4 className="font-semibold mb-4 text-primary">Контакты</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>+7 (999) 777-77-77</li>
+                <li>info@questcity.ru</li>
+                <li>ул. Приключений, 13</li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/20 text-center text-sm text-white/70">
-            <p>© 2024 AutoRent. Все права защищены.</p>
+          <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
+            <p>© 2024 QuestCity. Все права защищены.</p>
           </div>
         </div>
       </footer>
